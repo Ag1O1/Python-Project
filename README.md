@@ -3,7 +3,7 @@
 
 ## TODO
 ---
-- [ ] decimal to binary
+- [x] decimal to binary
 - [ ] validate binary
 
 - [ ] Use validations in parser code 

@@ -98,12 +98,22 @@ def convert_to_decimal(num:str,base:str):
     elif base == "dec":
         return int(num)
 
-# TODO: decimal_to_binary
+def decimal_to_binary(n):
+    if n == 0:
+        return "0"
+
+    bin_digits = ""
+
+    while n > 0:
+        r = n % 2
+        bin_digits = str(r) + bin_digits
+        n = n // 2
+
+    return bin_digits
 
 def decimal_to_base(num:int,base:str):
     if base == "bin":
-        print("ERROR not implemented")
-        return
+        return decimal_to_binary(num)
     elif base == "oct":
         return decimal_to_octal(num)
     elif base == "dec":
