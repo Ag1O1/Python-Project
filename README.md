@@ -7,6 +7,6 @@
 
 - [x] Use validations in parser code 
 - [ ] Add comments documenting code better
-- [ ] Add history
+- [x] Add history
 - [ ] Add file upload and export support
 - [ ] Add boolean algebra simplification
