@@ -96,7 +96,9 @@ def evaluate_parentheses(tokens):
     while "(" in tokens:
         start = 0
         for i in range(len(tokens)):
-            if tokens[i] == "(":
+            if (i == len(tokens)-1 and  not tokens[i] == ")") or tokens[len(tokens)-1] == "(":
+                raise SyntaxError("no matching closing bracket")
+            elif tokens[i] == "(":
                 start = i
             elif tokens[i] == ")":
                 res = evaluate(tokens[start+1:i])
