@@ -131,6 +131,11 @@ def evaluate_conversions(tokens):
     return tokens
 
 def calc(string):
+    if string == "":
+        raise SyntaxError("empty input")
     tokens = tokenize(string)
-    res = evaluate_parentheses(evaluate_conversions(tokens))[0]
-    return res
+    res = evaluate_parentheses(evaluate_conversions(tokens))
+    if len(res) == 1:
+        return res[0]
+    else:
+        raise SyntaxError("missing operator between values")
