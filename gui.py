@@ -1,3 +1,4 @@
+from jinja2.nodes import Output
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QVBoxLayout, QHBoxLayout, QLabel, QComboBox
 from PySide6.QtGui import QPalette
@@ -21,7 +22,7 @@ def calculate():
         if combo_value == "Binary":
             output_field.setText(str("0b%s"%decimal_to_base(res,"bin")))
     except Exception as e:
-        error_field.setText("ERROR:%s"%str(e))
+        error_field.setText("ERROR:%s "%str(e))
 
 app = QApplication(sys.argv)
 
@@ -74,15 +75,12 @@ QComboBox:hover {{
 """)
 
 error_field = QLabel()
-error_field.setText("Output")
 error_field.setMinimumHeight(24)
 error_field.setStyleSheet(f"""
 QLabel {{
-    border: 3px solid {mid_color};
-    padding: 6px;
-    font-weight: bold;
-    font-size: 12px;
-    color: {error_color}
+    font-style: italic;
+    font-size: 16px;
+    color: {error_color};
     background-color: {bg_color};
 }}
 """)
@@ -117,16 +115,24 @@ QPushButton:hover {{
 }}
 """)
 
-input_layout = QHBoxLayout()
-input_layout.addWidget(output_field,alignment=Qt.AlignmentFlag.AlignCenter)
-input_layout.addWidget(combobox,alignment=Qt.AlignmentFlag.AlignCenter)
+button_layout = QHBoxLayout()
+button_layout.setSpacing(2)
+button_layout.setContentsMargins(0, 0, 0, 0)
+button_layout.addWidget(button,alignment=Qt.AlignmentFlag.AlignCenter)
+button_layout.addWidget(combobox,alignment=Qt.AlignmentFlag.AlignCenter)
+
+input_layout = QVBoxLayout()
+input_layout.setSpacing(2)
+input_layout.setContentsMargins(0, 0, 0, 0)
+input_layout.addWidget(input_field)
+input_layout.addWidget(error_field)
 
 layout.addStretch()
-layout.setSpacing(30)
-layout.addWidget(input_field)
-layout.addWidget(error_field)
-layout.addWidget(button,alignment=Qt.AlignmentFlag.AlignCenter)
+layout.setSpacing(25)
+
 layout.addLayout(input_layout)
+layout.addLayout(button_layout)
+layout.addWidget(output_field)
 layout.addStretch()
 
 input_field.returnPressed.connect(calculate)
