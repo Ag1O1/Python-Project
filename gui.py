@@ -6,19 +6,22 @@ import sys
 import parser
 
 def calculate():
+    error_field.clear()
     string = input_field.text()
     print(string)
-    res = parser.calc(string)
-    combo_value = combobox.currentText()
-    if combo_value == "Decimal":
-        output_field.setText(str(decimal_to_base(res,"dec")))
-    if combo_value == "Hexadecimal":
-        output_field.setText(str("0x%s"%decimal_to_base(res,"hex")))
-    if combo_value == "Octal":
-        output_field.setText(str("0o%s"%decimal_to_base(res,"oct")))
-    if combo_value == "Binary":
-        output_field.setText(str("0b%s"%decimal_to_base(res,"bin")))
-
+    try:
+        res = parser.calc(string)
+        combo_value = combobox.currentText()
+        if combo_value == "Decimal":
+            output_field.setText(str(decimal_to_base(res,"dec")))
+        if combo_value == "Hexadecimal":
+            output_field.setText(str("0x%s"%decimal_to_base(res,"hex")))
+        if combo_value == "Octal":
+            output_field.setText(str("0o%s"%decimal_to_base(res,"oct")))
+        if combo_value == "Binary":
+            output_field.setText(str("0b%s"%decimal_to_base(res,"bin")))
+    except Exception as e:
+        error_field.setText("ERROR:%s"%str(e))
 
 app = QApplication(sys.argv)
 
@@ -33,6 +36,7 @@ palette = QApplication.palette()
 bg_color = palette.color(QPalette.ColorRole.Window).name()
 text_color = palette.color(QPalette.ColorRole.WindowText).name()
 mid_color = palette.color(QPalette.ColorRole.Mid).name()
+error_color = palette.color(QPalette.ColorRole.PlaceholderText).name()
 highlight_color = palette.color(QPalette.ColorRole.Highlight).name()
 
 input_field = QLineEdit()
@@ -66,6 +70,20 @@ QComboBox {{
 }}
 QComboBox:hover {{
     border: 3px solid {highlight_color};
+}}
+""")
+
+error_field = QLabel()
+error_field.setText("Output")
+error_field.setMinimumHeight(24)
+error_field.setStyleSheet(f"""
+QLabel {{
+    border: 3px solid {mid_color};
+    padding: 6px;
+    font-weight: bold;
+    font-size: 12px;
+    color: {error_color}
+    background-color: {bg_color};
 }}
 """)
 
@@ -106,6 +124,7 @@ input_layout.addWidget(combobox,alignment=Qt.AlignmentFlag.AlignCenter)
 layout.addStretch()
 layout.setSpacing(30)
 layout.addWidget(input_field)
+layout.addWidget(error_field)
 layout.addWidget(button,alignment=Qt.AlignmentFlag.AlignCenter)
 layout.addLayout(input_layout)
 layout.addStretch()

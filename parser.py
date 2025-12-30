@@ -1,4 +1,4 @@
-from validations import validate_decimal
+from validations import validate_decimal, validate_binary, validate_hex, validate_octal
 from convertions import convert_to_decimal, decimal_to_base
 def operate(num1,num2,operation):
     if operation == "+":
@@ -11,11 +11,10 @@ def operate(num1,num2,operation):
         num1 = num1 ** num2
     elif operation == "/":
         if num2 == 0:
-            print("ERROR: Devision by zero")
-            return 0
+            raise ValueError("division by zero")
         num1 = num1 // num2
     else:
-        print("INVALID OPERATION")
+        raise ValueError("invalid operation")
     return num1
 
 def tokenize(string):
@@ -35,13 +34,19 @@ def tokenize(string):
         elif c.isdigit():
             number += c
             i += 1
-        else:
+        elif c in  "+-*/^()":
             if number:
                 tokens.append(int(number))
                 number = ""
-            if c in "+-*/^()":
-                tokens.append(c)
+            tokens.append(c)
             i += 1
+        elif c == " ":
+            if number:
+                tokens.append(int(number))
+                number = ""
+            i += 1
+        else:
+            raise ValueError("invalid character")
     if number:
         tokens.append(int(number))
     print(tokens)
@@ -104,14 +109,20 @@ def evaluate_conversions(tokens):
         for i in range(len(tokens)):
             if validate_decimal(str(tokens[i])): continue
             if tokens[i].startswith("0b"):
+                if not validate_binary(tokens[i][2:len(tokens[i])]):
+                    raise ValueError("invalid binary value")
                 num = tokens[i][2:len(tokens[i])]
                 num = convert_to_decimal(num,"bin")
                 tokens[i] = num
             elif tokens[i].startswith("0o"):
+                if not validate_octal(tokens[i][2:len(tokens[i])]):
+                    raise ValueError("invalid octal value")
                 num = tokens[i][2:len(tokens[i])]
                 num = convert_to_decimal(num,"oct")
                 tokens[i] = num
             elif tokens[i].startswith("0x"):
+                if not validate_hex(tokens[i][2:len(tokens[i])]):
+                    raise ValueError("invalid hexadecimal value")
                 num = tokens[i][2:len(tokens[i])]
                 num = convert_to_decimal(num,"hex")
                 tokens[i] = num

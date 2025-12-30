@@ -5,6 +5,11 @@ def validate_hex(hex:str) -> bool:
             return False
     return True
 
+def validate_octal(oct:str) -> bool:
+    for c in oct:
+        if c not in "01234567":
+            return False
+    return True
 
 ### OA
 def validate_binary(binary):
@@ -26,6 +31,3 @@ def validate_decimal(decimal):
             return False
 
     return True
-
-### OS
-# TODO: Validate binary
