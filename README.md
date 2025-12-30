@@ -4,8 +4,9 @@
 ## TODO
 ---
 - [x] decimal to binary
-- [ ] validate binary
 
-- [ ] Use validations in parser code 
+- [x] Use validations in parser code 
 - [ ] Add comments documenting code better
-- [ ] Get ideas for more features "Not in normal calculators"
+- [ ] Add history
+- [ ] Add file upload and export support
+- [ ] Add boolean algebra simplification
