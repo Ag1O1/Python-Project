@@ -1,3 +1,4 @@
+from sqlalchemy.util.typing import final
 from convertions import decimal_to_binary
 def decimal_list_to_binary(minterms,number_of_variables):
     minterms = [decimal_to_binary(x) for x in minterms]
@@ -62,7 +63,11 @@ def minterm_to_expression(minterms,number_of_variables):
         minterms = list(merged)
 
     print("All_primes: ",all_primes)
-    print("Final result: ",binary_to_expression(select_best_primes(all_primes,original_minterms,number_of_variables),number_of_variables))
+    best_primes = select_best_primes(all_primes,original_minterms,number_of_variables)
+    final_res = binary_to_expression(best_primes ,number_of_variables)
+    if len(best_primes) == 1 and (best_primes[0] == '-'*number_of_variables):
+        return "1"
+    else: return final_res
 
 def binary_to_expression(binary_expression,number_of_variables):
     # Generates letters depending on number_of_variables (A,B,C...)
@@ -107,7 +112,3 @@ def select_best_primes(all_primes, original_decimal_minterms,number_of_variables
             break
 
     return final_primes
-
-minterms = [0,2,5,7,4,7,15]
-nv = 4
-minterm_to_expression(minterms,nv)
