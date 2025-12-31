@@ -1,16 +1,16 @@
-from numpy import split
-from sqlalchemy.orm.attributes import History
-from jinja2.nodes import Output
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QTextEdit, QSplitter
+from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QTextEdit, QSplitter, QTabWidget
 from PySide6.QtGui import QPalette
 from convertions import decimal_to_base
+from min_to_expr import minterm_to_expression
+import os
 import sys
 import parser
 
 
 def calculate():
     error_field.clear()
+    error_field.hide()
     string = input_field.text()
     print(string)
     try:
@@ -27,7 +27,21 @@ def calculate():
         output_field.setText(res)
         history_text.append("%s = %s"%(string,res))
     except Exception as e:
+        error_field.show()
         error_field.setText("ERROR:%s "%str(e))
+
+def export_history():
+    with open("history.txt", "w") as f: f.write(history_text.toPlainText())
+
+def bool_calculate():
+    try:
+        minterms = [int(x) for x in minterm_input_field.text().split(",")]
+        res = minterm_to_expression(minterms,int(var_num_combobox.currentText()))
+        bool_output_field.setText(res)
+    except Exception as e:
+        bool_output_field.setText("Invalid input")
+
+
 
 app = QApplication(sys.argv)
 
@@ -74,6 +88,7 @@ QComboBox:hover {{
 """)
 
 error_field = QLabel()
+error_field.hide()
 error_field.setMinimumHeight(24)
 error_field.setStyleSheet(f"""
 QLabel {{
@@ -116,15 +131,32 @@ QPushButton:hover {{
 
 history_text = QTextEdit()
 history_text.setReadOnly(True)
+if os.path.exists("history.txt"):
+    with open("history.txt", "r") as f:
+        history_text.append(f.read())
 
 history_label = QLabel("Operation History")
 history_label.setStyleSheet("font-weight: bold; font-size: 16px; padding: 10px;")
 
+export_button = QPushButton("Export history")
+export_button.setMinimumHeight(32)
+export_button.setMaximumWidth(240)
+export_button.clicked.connect(export_history)
+export_button.setStyleSheet(f"""
+QPushButton {{
+    border: 3px solid {mid_color};
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 24px;
+}}
+QPushButton:hover {{
+    border: 3px solid {highlight_color};
+}}
+""")
+
 window = QWidget()
 window.setWindowTitle("BCD Calculator")
 
-layout = QHBoxLayout(window)
-layout.setContentsMargins(30,30,30,30)
 splitter = QSplitter(Qt.Orientation.Horizontal)
 splitter.setHandleWidth(5)
 splitter.setStyleSheet(f"""
@@ -136,6 +168,71 @@ splitter.setStyleSheet(f"""
     QSplitter::handle:hover {{
         background: {highlight_color};
     }}
+""")
+
+# minterm to expression gui
+var_num_combobox = QComboBox()
+var_num_combobox.setFixedWidth(150)
+var_num_combobox.setMinimumHeight(30)
+var_num_combobox.addItem("3")
+var_num_combobox.addItem("4")
+var_num_combobox.addItem("5")
+var_num_combobox.setStyleSheet(f"""
+QComboBox {{
+    border: 3px solid {mid_color};
+    border-radius: 6px;
+    padding: 2px;
+    font-size: 16px;
+}}
+QComboBox:hover {{
+    border: 3px solid {highlight_color};
+}}
+""")
+
+minterm_input_field = QLineEdit()
+minterm_input_field.setPlaceholderText("Input here")
+minterm_input_field.setMinimumHeight(24)
+minterm_input_field.setStyleSheet(f"""
+QLineEdit {{
+    border: 3px solid {mid_color};
+    border-radius: 6px;
+    padding: 6px;
+    font-size: 16px;
+}}
+QLineEdit:focus {{
+    border: 3px solid {highlight_color};  /* highlight on focus */
+}}
+""")
+
+bool_button = QPushButton("Calculate")
+bool_button.setMinimumHeight(32)
+bool_button.setMaximumWidth(240)
+bool_button.clicked.connect(bool_calculate)
+bool_button.setStyleSheet(f"""
+QPushButton {{
+    border: 3px solid {mid_color};
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 24px;
+}}
+QPushButton:hover {{
+    border: 3px solid {highlight_color};
+}}
+""")
+
+bool_output_field = QLabel()
+bool_output_field.setText("Output")
+bool_output_field.setMinimumHeight(64)
+bool_output_field.setMaximumHeight(64)
+bool_output_field.setStyleSheet(f"""
+QLabel {{
+    border: 3px solid {mid_color};
+    border-radius: 6px;
+    padding: 6px;
+    font-weight: bold;
+    font-size: 24px;
+    background-color: {bg_color};
+}}
 """)
 
 button_layout = QHBoxLayout()
@@ -165,13 +262,40 @@ history_panel = QWidget()
 history_layout = QVBoxLayout(history_panel)
 history_layout.addWidget(history_label)
 history_layout.addWidget(history_text)
+history_layout.addWidget(export_button)
 
 splitter.addWidget(history_panel)
 splitter.addWidget(calc_panel)
 splitter.setSizes([250, 500])
-layout.addWidget(splitter)
+
+calc_tab = QWidget()
+calc_tab_layout = QHBoxLayout(calc_tab)
+calc_tab_layout.addWidget(splitter)
 
 input_field.returnPressed.connect(calculate)
+
+# minterm to expression gui composition
+bool_tab = QWidget()
+bool_tab_layout = QVBoxLayout(bool_tab)
+bool_tab_layout.setContentsMargins(20,75,20,75)
+bool_button_layout = QHBoxLayout()
+bool_button_layout.setSpacing(2)
+bool_button_layout.setContentsMargins(0, 0, 0, 0)
+bool_button_layout.addWidget(bool_button,alignment=Qt.AlignmentFlag.AlignCenter)
+bool_button_layout.addWidget(var_num_combobox,alignment=Qt.AlignmentFlag.AlignCenter)
+bool_tab_layout.addWidget(minterm_input_field)
+bool_tab_layout.addLayout(bool_button_layout)
+bool_tab_layout.addWidget(bool_output_field)
+
+minterm_input_field.returnPressed.connect(bool_calculate)
+
+layout = QVBoxLayout(window)
+layout.setContentsMargins(30,30,30,30)
+
+tabs = QTabWidget()
+tabs.addTab(calc_tab, "Calculator")
+tabs.addTab(bool_tab, "Minterm solver")
+layout.addWidget(tabs)
 
 window.setFixedSize(750,450)
 window.show()
