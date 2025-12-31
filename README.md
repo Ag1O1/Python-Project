@@ -17,3 +17,6 @@ Choose an output format from the combobox in the gui to output in bin,hex,oct, o
 ## Minterm solver
 Enter minterms in the input box separated by commas ex: 0,2,5,8,11,14.
 choose number of variables from the combo box.
+
+## Requirements
+The only requirement is Pyside6
