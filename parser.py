@@ -23,6 +23,7 @@ def tokenize(string):
     i = 0
     while i < len(string):
         c = string[i]
+        # Detect for bin,oct,hex patterns (0x,0o,0b)
         if c == "0" and i+1 < len(string) and string[i+1] in "box":
             prefix = string[i:i+2]
             i += 2
@@ -31,22 +32,29 @@ def tokenize(string):
                 num += string[i]
                 i += 1
             tokens.append(num)
+        # Numbers
         elif c.isdigit():
             number += c
             i += 1
+        # Operators
         elif c in  "+-*/^()":
+            # Flush number
             if number:
                 tokens.append(int(number))
                 number = ""
             tokens.append(c)
             i += 1
+        # Spaces
         elif c == " ":
+            # Flush number
             if number:
                 tokens.append(int(number))
                 number = ""
             i += 1
         else:
+            # Raise vlaue error if character is none of the symbols above
             raise ValueError("invalid character")
+    # Flush number
     if number:
         tokens.append(int(number))
     print(tokens)
@@ -55,7 +63,9 @@ def tokenize(string):
 def evaluate(tokens):
     i = 0
     while i < len(tokens):
+        # Unary minus
         if tokens[i] == "-":
+            # If previous token is an operator, then a minus is found then it is unary
             if i == 0 or str(tokens[i-1]) in "^*/+-(":
                 if isinstance(tokens[i+1], (float, int)):
                     val = tokens[i+1]
@@ -66,6 +76,7 @@ def evaluate(tokens):
 
     i = 0
     while i < len(tokens):
+        # Evaulate exponents
         if isinstance(tokens[i], str) and tokens[i] in "^":
             res = operate(tokens[i-1], tokens[i+1], tokens[i])
             tokens[i-1:i+2] = [res]
@@ -75,6 +86,7 @@ def evaluate(tokens):
 
     i = 0
     while i < len(tokens):
+        # Evaulate multiplication/division
         if isinstance(tokens[i], str) and tokens[i] in "*/":
             res = operate(tokens[i-1], tokens[i+1], tokens[i])
             tokens[i-1:i+2] = [res]
@@ -84,6 +96,7 @@ def evaluate(tokens):
 
     i = 0
     while i < len(tokens):
+        # Evaulate plus/minus
         if isinstance(tokens[i], str) and tokens[i] in "+-":
             res = operate(tokens[i-1], tokens[i+1], tokens[i])
             tokens[i-1:i+2] = [res]
@@ -92,6 +105,7 @@ def evaluate(tokens):
             i += 1
     return tokens
 
+# Evaluate parantheses first
 def evaluate_parentheses(tokens):
     while "(" in tokens:
         start = 0
@@ -106,23 +120,30 @@ def evaluate_parentheses(tokens):
                 break
     return evaluate(tokens)
 
+# Evaluate bin,hex,oct conversions
 def evaluate_conversions(tokens):
     while any(isinstance(t, str) and t.startswith(("0b","0o","0x")) for t in tokens):
         for i in range(len(tokens)):
             if validate_decimal(str(tokens[i])): continue
+            # Evaluate binary
             if tokens[i].startswith("0b"):
+                # Raise error if binary value is invalid
                 if not validate_binary(tokens[i][2:len(tokens[i])]):
                     raise ValueError("invalid binary value")
                 num = tokens[i][2:len(tokens[i])]
                 num = convert_to_decimal(num,"bin")
                 tokens[i] = num
+            # Evaluate octal
             elif tokens[i].startswith("0o"):
+                # Raise error if octal value is invalid
                 if not validate_octal(tokens[i][2:len(tokens[i])]):
                     raise ValueError("invalid octal value")
                 num = tokens[i][2:len(tokens[i])]
                 num = convert_to_decimal(num,"oct")
                 tokens[i] = num
+            # Evaluate hex
             elif tokens[i].startswith("0x"):
+                # Raise error if hex value is invalid
                 if not validate_hex(tokens[i][2:len(tokens[i])]):
                     raise ValueError("invalid hexadecimal value")
                 num = tokens[i][2:len(tokens[i])]
@@ -131,6 +152,7 @@ def evaluate_conversions(tokens):
     return tokens
 
 def calc(string):
+    # Handle empty inputs
     if string == "":
         raise SyntaxError("empty input")
     tokens = tokenize(string)
@@ -138,4 +160,5 @@ def calc(string):
     if len(res) == 1:
         return res[0]
     else:
+        # Handle missing operator, detected if result list doesn't collapse into one value
         raise SyntaxError("missing operator between values")

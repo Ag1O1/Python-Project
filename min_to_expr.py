@@ -1,11 +1,19 @@
 from convertions import decimal_to_binary
-#
+# General explaination:
+# Minterms are converted to binary format, then split across groups depending on how many 1s are in the value.
+# In the binary format "-" express ignored variable or don't cares, "1" is a variable and "0" is the negation of the variable.
+# Each value in a group and the group after it are merged together, repeated until no more merges are possible.
+# Then the most efficient primes are selected, converted into readable ABC.. format and outputted.
+# This algorithm is based on the Quine-McCluskey Algorithm.
+
+# convert a list of decimals to binary (minterms to binary)
 def decimal_list_to_binary(minterms,number_of_variables):
     minterms = [decimal_to_binary(x) for x in minterms]
     for i in range(len(minterms)):
         minterms[i] = minterms[i].zfill(number_of_variables)
     return minterms
 
+# merge two binary values
 def merge(a, b):
     diff = 0
     res = ""
@@ -21,6 +29,7 @@ def merge(a, b):
     return None
 
 
+# Main function which converts minterms to boolean expressions
 def minterm_to_expression(minterms,number_of_variables):
     original_minterms = minterms.copy()
     minterms = decimal_list_to_binary(minterms,number_of_variables)
@@ -69,6 +78,7 @@ def minterm_to_expression(minterms,number_of_variables):
         return "1"
     else: return final_res
 
+# Converts binary to readable format
 def binary_to_expression(binary_expression,number_of_variables):
     # Generates letters depending on number_of_variables (A,B,C...)
     vars = [chr(i) for i in range(65, 65 + number_of_variables)]
@@ -90,6 +100,7 @@ def covers(prime, decimal_minterm,number_of_variables):
             return False
     return True
 
+# Selects best (most efficient) primes
 def select_best_primes(all_primes, original_decimal_minterms,number_of_variables):
     remaining_minterms = set(original_decimal_minterms)
     final_primes = []

@@ -7,7 +7,7 @@ import os
 import sys
 import parser
 
-
+# Calculator calculate function
 def calculate():
     error_field.clear()
     error_field.hide()
@@ -30,9 +30,11 @@ def calculate():
         error_field.show()
         error_field.setText("ERROR:%s "%str(e))
 
+# Exports history
 def export_history():
     with open("history.txt", "w") as f: f.write(history_text.toPlainText())
 
+# Minterms_to_expression calculate button function
 def bool_calculate():
     try:
         minterms = [int(x) for x in minterm_input_field.text().split(",")]
@@ -45,6 +47,7 @@ def bool_calculate():
 
 app = QApplication(sys.argv)
 
+# Colors
 palette = QApplication.palette()
 bg_color = palette.color(QPalette.ColorRole.Window).name()
 text_color = palette.color(QPalette.ColorRole.WindowText).name()
@@ -52,7 +55,7 @@ mid_color = palette.color(QPalette.ColorRole.Mid).name()
 error_color = palette.color(QPalette.ColorRole.PlaceholderText).name()
 highlight_color = palette.color(QPalette.ColorRole.Highlight).name()
 
-
+# Calculator gui
 input_field = QLineEdit()
 input_field.setPlaceholderText("Input here")
 input_field.setMinimumHeight(24)
@@ -170,7 +173,7 @@ splitter.setStyleSheet(f"""
     }}
 """)
 
-# minterm to expression gui
+# Minterm to expression gui
 var_num_combobox = QComboBox()
 var_num_combobox.setFixedWidth(150)
 var_num_combobox.setMinimumHeight(30)
@@ -235,6 +238,7 @@ QLabel {{
 }}
 """)
 
+# Calculator gui composition
 button_layout = QHBoxLayout()
 button_layout.setSpacing(2)
 button_layout.setContentsMargins(0, 0, 0, 0)
