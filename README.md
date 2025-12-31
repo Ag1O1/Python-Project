@@ -1,12 +1,19 @@
 # Python Calculator
 > a calculator written in python supporting binary,hexal,octal
 
-## TODO
+## Documentation
 ---
-- [x] decimal to binary
+### Calculator
+Enter the input in the input box.
+supported operations are addition, subtraction, multiplication, division, and exponents.
+brackets are supported.
+bin,hex,oct convertions are supported by using the following prefixes:
+- 0b -> binary
+- 0x -> hexadecimal
+- 0o -> octal
 
-- [x] Use validations in parser code 
-- [x] Add comments documenting code better
-- [x] Add history
-- [x] Add file upload and export support
-- [x] Add boolean algebra simplification
+Choose an output format from the combobox in the gui to output in bin,hex,oct, or decimal.
+
+## Minterm solver
+Enter minterms in the input box separated by commas ex: 0,2,5,8,11,14.
+choose number of variables from the combo box.
