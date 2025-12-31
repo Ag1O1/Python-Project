@@ -1,5 +1,5 @@
-from sqlalchemy.util.typing import final
 from convertions import decimal_to_binary
+#
 def decimal_list_to_binary(minterms,number_of_variables):
     minterms = [decimal_to_binary(x) for x in minterms]
     for i in range(len(minterms)):
